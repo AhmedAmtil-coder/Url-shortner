@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Short Studio</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Short Studio home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Short Studio</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#create">Create</a>
+          <a href="#library">Library</a>
+          <a href="#insights">Insights</a>
+        </nav>
+        <button class="icon-button" id="refreshButton" type="button" aria-label="Refresh links" title="Refresh links">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 12a8 8 0 1 1-2.35-5.65M20 4v6h-6" />
+          </svg>
+        </button>
+      </header>
+
+      <main>
+        <section class="hero" id="create">
+          <div class="hero-copy">
+            <p class="eyebrow">Private link command center</p>
+            <h1>A shorter path from any link to everywhere.</h1>
+            <p class="lead">
+              Compose, brand, launch, and watch every short link from one focused studio.
+            </p>
+          </div>
+
+          <div class="composer-panel">
+            <form id="shortenForm" class="composer-form">
+              <div class="mode-switch" role="radiogroup" aria-label="Link mode">
+                <button class="mode-button is-active" type="button" data-mode="instant" aria-pressed="true">
+                  Instant
+                </button>
+                <button class="mode-button" type="button" data-mode="campaign" aria-pressed="false">
+                  Campaign
+                </button>
+                <button class="mode-button" type="button" data-mode="limited" aria-pressed="false">
+                  Timed
+                </button>
+              </div>
+
+              <label class="field field-wide">
+                <span>Destination</span>
+                <input
+                  id="urlInput"
+                  name="url"
+                  type="url"
+                  autocomplete="url"
+                  placeholder="https://example.com/product"
+                  required
+                />
+              </label>
+
+              <div class="field-grid">
+                <label class="field">
+                  <span>Title</span>
+                  <input id="titleInput" name="title" type="text" maxlength="80" placeholder="Launch page" />
+                </label>
+                <label class="field">
+                  <span>Custom alias</span>
+                  <input id="aliasInput" name="alias" type="text" maxlength="40" placeholder="spring-event" />
+                </label>
+              </div>
+
+              <div class="field-grid">
+                <label class="field">
+                  <span>Expiration</span>
+                  <input id="expiryInput" name="expiresAt" type="datetime-local" />
+                </label>
+                <label class="field">
+                  <span>Color</span>
+                  <select id="colorInput" name="color">
+                    <option value="blue">Action Blue</option>
+                    <option value="graphite">Graphite</option>
+                    <option value="pearl">Pearl</option>
+                    <option value="sage">Sage</option>
+                  </select>
+                </label>
+              </div>
+
+              <label class="field field-wide">
+                <span>Note</span>
+                <input id="noteInput" name="note" type="text" maxlength="180" placeholder="Launch audience, placement, or owner" />
+              </label>
+
+              <div class="composer-actions">
+                <button class="primary-button" type="submit">Create short link</button>
+                <button class="secondary-button" id="sampleButton" type="button">Try sample</button>
+              </div>
+            </form>
+
+            <aside class="result-card" aria-live="polite">
+              <div class="result-header">
+                <span class="status-dot"></span>
+                <span id="resultStatus">Ready</span>
+              </div>
+              <div class="short-url" id="resultUrl">short.studio/new</div>
+              <div class="result-actions">
+                <button class="dark-button" id="copyLatestButton" type="button" disabled>Copy</button>
+                <a class="text-link" id="openLatestLink" href="#" target="_blank" rel="noreferrer" aria-disabled="true">Open</a>
+              </div>
+              <div class="signature" id="signaturePreview" aria-hidden="true"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="metric-strip" id="insights" aria-label="Link metrics">
+          <article>
+            <span class="metric-value" id="metricLinks">0</span>
+            <span class="metric-label">Links</span>
+          </article>
+          <article>
+            <span class="metric-value" id="metricActive">0</span>
+            <span class="metric-label">Active</span>
+          </article>
+          <article>
+            <span class="metric-value" id="metricClicks">0</span>
+            <span class="metric-label">Clicks</span>
+          </article>
+          <article>
+            <span class="metric-value" id="metricLastClick">No clicks</span>
+            <span class="metric-label">Last click</span>
+          </article>
+        </section>
+
+        <section class="showcase">
+          <div class="product-tile tile-dark">
+            <div>
+              <p class="eyebrow">Link lens</p>
+              <h2>Every slug becomes a launch surface.</h2>
+            </div>
+            <div class="device-stage">
+              <div class="phone-card">
+                <div class="phone-top"></div>
+                <div class="phone-content">
+                  <span id="phoneTitle">Apple</span>
+                  <strong id="phoneSlug">/apple</strong>
+                  <small id="phoneUrl">apple.com</small>
+                </div>
+              </div>
+              <div class="link-beam"></div>
+            </div>
+          </div>
+
+          <div class="product-tile tile-light">
+            <p class="eyebrow">Signal</p>
+            <h2>Click activity arrives as a quiet timeline.</h2>
+            <div class="event-feed" id="eventFeed"></div>
+          </div>
+        </section>
+
+        <section class="library-section" id="library">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Library</p>
+              <h2>Your short links</h2>
+            </div>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
+              </svg>
+              <input id="searchInput" type="search" placeholder="Search links" aria-label="Search links" />
+            </div>
+          </div>
+
+          <div class="link-grid" id="linkGrid"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

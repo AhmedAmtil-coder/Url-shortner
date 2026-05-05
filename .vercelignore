@@ -1,0 +1,7 @@
+.git/
+data/
+server.log
+server-error.log
+node_modules/
+npm-debug.log*
+yarn-debug.log*

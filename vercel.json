@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs22.x",
+      "maxDuration": 10
+    }
+  },
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/api/.*",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/health",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/([A-Za-z0-9_-]+)$",
+      "dest": "/api/index.js"
+    }
+  ]
+}

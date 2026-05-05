@@ -1,0 +1,15 @@
+{
+  "name": "apple-url-shortener",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A no-dependency Apple-inspired URL shortener prototype with redirects, persistence, and analytics.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node --check server.js && node --check api/index.js && node --check public/app.js",
+    "vercel-build": "node -e \"console.log('No build step required')\""
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
