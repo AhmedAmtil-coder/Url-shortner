@@ -94,15 +94,20 @@ async function redisCommand(command) {
   return payload.result;
 }
 
+let dbReady = false;
 async function ensureDb() {
+  if (dbReady) return;
+
   if (hasRedisStorage()) {
     const existing = await redisCommand(["GET", REDIS_KEY]);
     if (!existing) await writeDb(seedDb());
+    dbReady = true;
     return;
   }
 
   if (!useFileStorage()) {
     memoryStore();
+    dbReady = true;
     return;
   }
 
@@ -112,6 +117,7 @@ async function ensureDb() {
   } catch {
     await writeDb(seedDb());
   }
+  dbReady = true;
 }
 
 async function readDb() {
@@ -179,11 +185,14 @@ function baseUrl(req) {
 function parseBody(req) {
   return new Promise((resolve, reject) => {
     let size = 0;
+    let aborted = false;
     const chunks = [];
 
     req.on("data", (chunk) => {
+      if (aborted) return;
       size += chunk.length;
       if (size > BODY_LIMIT) {
+        aborted = true;
         reject(Object.assign(new Error("Payload too large"), { status: 413 }));
         req.destroy();
         return;
@@ -192,6 +201,7 @@ function parseBody(req) {
     });
 
     req.on("end", () => {
+      if (aborted) return;
       if (!chunks.length) {
         resolve({});
         return;
@@ -203,7 +213,9 @@ function parseBody(req) {
       }
     });
 
-    req.on("error", reject);
+    req.on("error", (err) => {
+      if (!aborted) reject(err);
+    });
   });
 }
 
@@ -227,7 +239,6 @@ function validateDestination(value) {
     });
   }
 
-  parsed.hash = parsed.hash;
   return parsed.toString();
 }
 
@@ -324,6 +335,14 @@ function hitRateLimit(req) {
 
   bucket.count += 1;
   rateBuckets.set(ip, bucket);
+
+  // Prevent unbounded memory growth: prune stale buckets periodically
+  if (rateBuckets.size > 5000) {
+    for (const [key, val] of rateBuckets) {
+      if (val.resetAt < now) rateBuckets.delete(key);
+    }
+  }
+
   return bucket.count > 80;
 }
 

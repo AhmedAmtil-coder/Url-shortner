@@ -207,7 +207,7 @@ function renderLinks() {
             <a class="link-url" href="${escapeHtml(link.shortUrl)}" target="_blank" rel="noreferrer">${escapeHtml(link.shortUrl)}</a>
           </div>
           <p>${escapeHtml(note)}</p>
-          <p>${Number(link.clicks || 0)} clicks · ${expired} · Expires ${escapeHtml(formatDate(link.expiresAt))}</p>
+          <p>${Number(link.clicks || 0)} clicks · ${expired}${link.expiresAt ? ` · Expires ${escapeHtml(formatDate(link.expiresAt))}` : ""}</p>
           <div class="card-actions">
             <button class="tiny-button" type="button" data-action="select" data-slug="${escapeHtml(link.slug)}">Focus</button>
             <button class="tiny-button" type="button" data-action="copy" data-url="${escapeHtml(link.shortUrl)}">Copy</button>
@@ -228,8 +228,10 @@ function renderAll() {
 }
 
 async function api(path, options = {}) {
+  const headers = {};
+  if (options.body) headers["Content-Type"] = "application/json";
   const response = await fetch(path, {
-    headers: { "Content-Type": "application/json" },
+    headers,
     ...options,
   });
   const data = await response.json().catch(() => ({}));
@@ -325,10 +327,14 @@ async function submitForm(event) {
 }
 
 async function archiveLink(slug) {
-  await api(`/api/links/${encodeURIComponent(slug)}`, { method: "DELETE" });
-  if (state.selectedSlug === slug) state.selectedSlug = null;
-  await loadLinks();
-  showToast("Archived");
+  try {
+    await api(`/api/links/${encodeURIComponent(slug)}`, { method: "DELETE" });
+    if (state.selectedSlug === slug) state.selectedSlug = null;
+    await loadLinks();
+    showToast("Archived");
+  } catch (error) {
+    showToast(error.message);
+  }
 }
 
 function fillSample() {
