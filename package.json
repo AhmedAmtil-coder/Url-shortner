@@ -10,6 +10,6 @@
     "vercel-build": "node -e \"console.log('No build step required')\""
   },
   "engines": {
-    "node": ">=18"
+    "node": "22.x"
   }
 }
